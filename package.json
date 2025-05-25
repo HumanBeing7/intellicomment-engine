@@ -1,0 +1,45 @@
+{
+  "name": "intellicomment-engine",
+  "displayName": "IntelliComment Engine",
+  "publisher": "daredevil",
+  "version": "1.0.0",
+  "description": "A smart static analysis and documentation tool for JavaScript functions. Automatically generates JSDoc comments, detects unreachable code, infinite loops, unused variables, and visualizes control flow graphs—all within VS Code.",
+  "main": "./extension.js",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "activationEvents": [
+    "onCommand:intellicomment-engine.analyzeFile"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "intellicomment-engine.analyzeFile",
+        "title": "Analyze Current File with IntelliComment Engine"
+      },
+      {
+        "command": "intellicomment-engine.showCFG",
+        "title": "Show CFG for Selected Function"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "intellicomment-engine.analyzeFile",
+        "key": "ctrl+alt+j",
+        "when": "editorTextFocus && editorLangId == javascript"
+      },
+      {
+        "command": "intellicomment-engine.showCFG",
+        "key": "ctrl+alt+g",
+        "when": "editorTextFocus && editorLangId == javascript"
+      }
+    ]
+  },
+  "dependencies": {
+    "espree": "^10.3.0",
+    "estraverse": "^5.3.0",
+    "generator-code": "^1.11.9",
+    "viz.js": "^2.1.2",
+    "yargs": "^17.7.2"
+  }
+}
