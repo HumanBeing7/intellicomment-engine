@@ -1,10 +1,14 @@
 {
   "name": "intellicomment-engine",
   "displayName": "IntelliComment Engine",
-  "publisher": "daredevil",
+  "publisher": "dare-devil",
   "version": "1.0.0",
   "description": "A smart static analysis and documentation tool for JavaScript functions. Automatically generates JSDoc comments, detects unreachable code, infinite loops, unused variables, and visualizes control flow graphs—all within VS Code.",
   "main": "./extension.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HumanBeing7/intellicomment-engine"
+  },
   "engines": {
     "vscode": "^1.80.0"
   },

@@ -5,6 +5,39 @@ const { cfgToDot } = require('./analyzer/cfgGenerator');
 const Viz = require('viz.js');
 const { Module, render } = require('viz.js/full.render.js');
 
+/**
+ * Checks if there is a JSDoc comment immediately before the function.
+ * @param {vscode.TextDocument} document
+ * @param {number} funcStart - Offset of function start
+ * @returns {boolean}
+ */
+function hasJSDocAbove(document, funcStart) {
+    const funcPos = document.positionAt(funcStart);
+    let line = funcPos.line - 1;
+    // Scan upwards, skipping blank lines and single-line comments
+    while (line >= 0) {
+        const text = document.lineAt(line).text.trim();
+        if (text === '') {
+            line--;
+            continue;
+        }
+        // If we hit a non-Javadoc comment or code, stop
+        if (!text.startsWith('*') && !text.startsWith('/**') && !text.startsWith('*') && !text.startsWith('*/')) {
+            return false;
+        }
+        // If we find the start of a JSDoc comment
+        if (text.startsWith('/**')) {
+            return true;
+        }
+        // If we find the end of a block comment but not a JSDoc, stop
+        if (text.startsWith('/*') && !text.startsWith('/**')) {
+            return false;
+        }
+        line--;
+    }
+    return false;
+}
+
 function activate(context) {
     let disposable = vscode.commands.registerCommand('intellicomment-engine.analyzeFile', async function () {
         const editor = vscode.window.activeTextEditor;
@@ -39,14 +72,24 @@ function activate(context) {
         // Sort by start descending to avoid offset issues
         const sortedFunctions = [...targetFunctions].sort((a, b) => b.start - a.start);
 
+        let injected = false;
         for (const func of sortedFunctions) {
+            if (hasJSDocAbove(editor.document, func.start)) {
+                // Already has a JSDoc comment, skip
+                continue;
+            }
             const jsdoc = generateJSDoc(func) + '\n';
             const pos = editor.document.positionAt(func.start);
             edit.insert(uri, pos, jsdoc);
+            injected = true;
         }
 
-        await vscode.workspace.applyEdit(edit);
-        vscode.window.showInformationMessage('JSDoc comment(s) injected!');
+        if (injected) {
+            await vscode.workspace.applyEdit(edit);
+            vscode.window.showInformationMessage('JSDoc comment(s) injected!');
+        } else {
+            vscode.window.showInformationMessage('All selected functions already have JSDoc comments.');
+        }
     });
 
     context.subscriptions.push(disposable);
