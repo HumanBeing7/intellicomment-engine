@@ -69,7 +69,6 @@ This extension does not contribute any custom settings at this time.
 
 ## License
 
-[MIT](LICENSE)
 
 ---
 
